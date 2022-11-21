@@ -51,7 +51,7 @@ export const LoginPage = () => {
     }
     console.log(registerName);
     startRegister({
-      name: registerEmail,
+      name: registerName,
       email: registerEmail,
       password: registerPassword,
     });

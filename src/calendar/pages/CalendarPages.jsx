@@ -1,26 +1,30 @@
 import { Calendar } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
-import { Navbar, CalendarEvent , CalendarModal  ,  FabAddNew} from "../";
+import { useEffect } from "react";
+import { Navbar, CalendarEvent, CalendarModal, FabAddNew } from "../";
 import { addHours } from "date-fns";
 import { getMessages, localizer } from "../../helpers";
 import { useState } from "react";
-import {useUiStore , useCalendarStore} from "../../hooks";
-import {FabDelete} from "../components/FabDelete";
-
+import { useUiStore, useCalendarStore, useAuthStore } from "../../hooks";
+import { FabDelete } from "../components/FabDelete";
 
 export const CalendarPages = () => {
-  const { events  , setActiveEvent } = useCalendarStore();
+  const { user } = useAuthStore();
+  const { events, setActiveEvent, startLoadingEvents } = useCalendarStore();
   const { openDateModal } = useUiStore();
   const [lastView, setLastView] = useState(
     localStorage.getItem("lastView") || "week"
   );
 
+  //Event Style Getter
   const eventStyleGetter = (event, start, end, isSelected) => {
     console.log({ event, start, end, isSelected });
 
+    const isMyEvent =
+      user.uid === event.user._id || user.uid === event.user.uid;
+
     const style = {
-      backgroundColor: "#347CF7",
+      backgroundColor: isMyEvent ? "#347CF7" : "#465660",
       borderRadius: "0px",
       opacity: 0.8,
       color: "white",
@@ -31,20 +35,28 @@ export const CalendarPages = () => {
     };
   };
 
+  //Event Double Click
   const onDoubleClick = () => {
     console.log({ viewChanged: event });
     openDateModal();
   };
 
+  //Event Select
   const onSelect = (event) => {
     //console.log({ click: event });
     setActiveEvent(event);
   };
 
+  //Event ViewChanged
   const onViewChanged = (event) => {
-    localStorage.setItem('lastView' , event);
-    setLastView(event)
+    localStorage.setItem("lastView", event);
+    setLastView(event);
   };
+
+  //UseEffect Que Reacciona a la Carga de Eventos
+  useEffect(() => {
+    startLoadingEvents();
+  }, []);
 
   return (
     <>
@@ -66,9 +78,9 @@ export const CalendarPages = () => {
         onSelectEvent={onSelect}
         onView={onViewChanged}
       />
-        <CalendarModal /> 
-        <FabAddNew />
-        <FabDelete />
+      <CalendarModal />
+      <FabAddNew />
+      <FabDelete />
     </>
   );
 };
