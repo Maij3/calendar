@@ -34,11 +34,15 @@ export const LoginPage = () => {
     onInputChange: onRegisterInputChange,
   } = useForm(registerFormFields);
 
+
+  //Login
   const loginSubmit = (event) => {
     event.preventDefault();
     startLogin({ email: loginEmail, password: loginPassword });
   };
-
+  
+  
+  //Register
   const registerSubmit = (event) => {
     event.preventDefault();
     if (registerPassword !== registerPassword2) {
@@ -47,7 +51,7 @@ export const LoginPage = () => {
     }
     console.log(registerName);
     startRegister({
-      email: registerEmail,
+      name: registerEmail,
       email: registerEmail,
       password: registerPassword,
     });

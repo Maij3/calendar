@@ -40,11 +40,36 @@ export const useAuthStore = () => {
       localStorage.setItem("token-init-date", new Date().getTime());
       dispatch(onLogin({ name: data.name, uid: data.uid }));
     } catch (error) {
-      dispatch(onLogout("Credenciales Incorrectas"));
+      console.log({ error });
+      dispatch(onLogout(error.response.data?.msg || "---"));
       setTimeout(() => {
         dispatch(clearErrorMessage());
       }, 10);
     }
+  };
+
+  //Check Auth token
+
+  const checkAuthToken = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return dispatch(onLogout());
+    try {
+      const { data } = await calendarApi.get("auth/renew");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("token-init-date", new Date().getTime());
+      dispatch(onLogin({ name: data.name, uid: data.uid }));
+    } catch (error) {
+      console.log(error);
+      localStorage.clear();
+      dispatch(onLogout());
+    }
+  };
+
+  // Start Logout
+
+  const startLogout = () => {
+    localStorage.clear();
+    dispatch(onLogout());
   };
 
   return {
@@ -55,5 +80,7 @@ export const useAuthStore = () => {
     //Metodos
     startLogin,
     startRegister,
+    checkAuthToken,
+    startLogout,
   };
 };
